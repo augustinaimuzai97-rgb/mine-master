@@ -83,7 +83,6 @@ export default function App() {
   } else {
     setNotice("Welcome to Mine Master.");
   }
-  }
 
   async function claimReward(kind: "mining" | "checkin") {
     if (!session?.access_token) return;
