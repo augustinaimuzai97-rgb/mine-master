@@ -54,19 +54,35 @@ export default function App() {
   }
 
   async function handleAuth(event: FormEvent) {
-    event.preventDefault();
-    if (!supabase) return;
-    setBusy(true); setNotice("");
-    const result = authMode === "signup"
-      ? await supabase.auth.signUp({
-          email, password,
-          options: { data: { full_name: fullName.trim(), phone: phone.trim() } }
-        })
-      : await supabase.auth.signInWithPassword({ email, password });
-    setBusy(false);
-    if (result.error) setNotice(result.error.message);
-    else if (authMode === "signup" && !result.data.session) setNotice("Account created. Check your email to confirm your address, then sign in.");
-    else setNotice("Welcome to Mine Master.");
+  event.preventDefault();
+  if (!supabase) return;
+
+  setBusy(true);
+  setNotice("");
+
+  const result = authMode === "signup"
+    ? await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: fullName.trim(),
+            phone: phone.trim()
+          },
+          emailRedirectTo: "https://cosmic-pixie-4a4167.netlify.app/"
+        }
+      })
+    : await supabase.auth.signInWithPassword({ email, password });
+
+  setBusy(false);
+
+  if (result.error) {
+    setNotice(result.error.message);
+  } else if (authMode === "signup" && !result.data.session) {
+    setNotice("Account created. Check your email to confirm your address, then sign in.");
+  } else {
+    setNotice("Welcome to Mine Master.");
+  }
   }
 
   async function claimReward(kind: "mining" | "checkin") {
