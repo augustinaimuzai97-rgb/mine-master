@@ -78,13 +78,18 @@ export default function App() {
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
         body: JSON.stringify({ kind })
       });
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error || "Reward could not be claimed.");
-      setNotice(`Success! ${result.amount} points added to your wallet.`);
-      await loadDashboard();
-    } catch (error) {
-      setNotice(error instanceof Error ? error.message : "Something went wrong.");
-    } finally { setBusy(false); }
+      const result = authMode === "signup"
+  ? await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: fullName.trim(),
+          phone: phone.trim()
+        },
+        emailRedirectTo: "https://cosmic-pixie-4a4167.netlify.app/"
+      }
+    })
   }
 
   async function signOut() {
